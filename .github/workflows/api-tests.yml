@@ -1,0 +1,8 @@
+name: Java Tests
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    uses: yandex-praktikum/java-wordle4j/.github/workflows/api-tests.yml@ci
