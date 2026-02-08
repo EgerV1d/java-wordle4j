@@ -48,7 +48,7 @@ public class Wordle {
 
         try {
             while (!wordleGame.isGameOver() && !wordleGame.isWin()) {
-                System.out.println("\nПопыток осталось: "+ wordleGame.getAttemptsLeft());
+                System.out.println("\nПопыток осталось: " + wordleGame.getAttemptsLeft());
                 System.out.print("Введите слово или Enter для подсказки: ");
                 String guess = scanner.nextLine().trim();
 

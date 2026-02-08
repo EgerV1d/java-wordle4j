@@ -146,7 +146,7 @@ public class WordleGame {
         }
 
         for (char c : correctLetters) {
-            if (word.indexOf(c) == - 1) {
+            if (word.indexOf(c) == -1) {
                 return false;
             }
         }

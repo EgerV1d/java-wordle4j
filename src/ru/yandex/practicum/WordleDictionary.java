@@ -30,6 +30,6 @@ public class WordleDictionary {
 
     public String getRandomWord() {
         Random random = new Random();
-        return  words.get(random.nextInt(words.size()));
+        return words.get(random.nextInt(words.size()));
     }
 }
