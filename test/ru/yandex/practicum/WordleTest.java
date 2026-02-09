@@ -22,20 +22,21 @@ class WordleTest {
         PrintWriter log = new PrintWriter(System.out);
         WordleDictionaryLoader loader = new WordleDictionaryLoader(log, 5);
         dictionary = loader.loadDictionary("words_ru.txt");
-    }
 
-    @Test
-    void testGameCreation() {
         if (dictionary == null) {
             System.out.println("Ошибка, словарь не загружен");
             return;
         }
+    }
+
+    @Test
+    void testGameCreation() {
 
         WordleGame game = new WordleGame(dictionary);
 
         assertNotNull(game.getAnswer());
-        assertEquals(5, game.getAnswer().length());
-        assertEquals(6, game.getAttemptsLeft());
+        assertEquals(WordleGame.WORD_LENGTH, game.getAnswer().length());
+        assertEquals(WordleGame.MAX_ATTEMPTS, game.getAttemptsLeft());
         assertFalse(game.isGameOver());
         assertFalse(game.isWin());
     }
@@ -44,9 +45,14 @@ class WordleTest {
     void testGameWinByOneStep() throws GameException {
         WordleGame game = new WordleGame(dictionary);
         String answer = game.getAnswer();
-
         String res = game.makeGuess(answer);
-        assertEquals("+++++", res);
+
+        StringBuilder expected = new StringBuilder();
+
+        for (int i = 0; i < WordleGame.WORD_LENGTH; i++) {
+            expected.append(WordleGame.CORRECT_POSITION);
+        }
+        assertEquals(expected.toString(), res);
         assertTrue(game.isWin());
     }
 
@@ -63,7 +69,13 @@ class WordleTest {
         String wrongWord = wrongWords.get(random.nextInt(wrongWords.size()));
         String res = game.makeGuess(wrongWord);
 
-        assertNotEquals("+++++", res);
+        StringBuilder unExpected = new StringBuilder();
+
+        for (int i = 0; i < WordleGame.WORD_LENGTH; i++) {
+            unExpected.append(WordleGame.CORRECT_POSITION);
+        }
+
+        assertNotEquals(unExpected.toString(), res);
         assertFalse(game.isWin());
     }
 
@@ -99,7 +111,7 @@ class WordleTest {
             }
         }
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < WordleGame.MAX_ATTEMPTS; i++) {
             game.makeGuess(wrongWord);
         }
 

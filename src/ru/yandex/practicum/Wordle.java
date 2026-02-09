@@ -21,12 +21,12 @@ public class Wordle {
         try (PrintWriter log = new PrintWriter("game.log", StandardCharsets.UTF_8)) {
             log.println("Старт игры");
 
-            WordleDictionaryLoader loader = new WordleDictionaryLoader(log, 5);
+            WordleDictionaryLoader loader = new WordleDictionaryLoader(log, WordleGame.WORD_LENGTH);
             WordleDictionary dictionary = loader.loadDictionary("words_ru.txt");
             log.println("Проверка загрузки словаря. Слов: " + dictionary.size());
 
             if (dictionary.size() == 0) {
-                throw new IOException("Словарь пуст");
+                throw new EmptyDictionaryException("Словарь пуст");
             }
 
             WordleGame wordleGame = new WordleGame(dictionary);
@@ -43,8 +43,12 @@ public class Wordle {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Начало игры.");
-        System.out.println("Угадайте слово из 5 букв за 6 попыток");
-        System.out.println("\"+\" - буква на месте, \"^\" - буква есть в слове, \"\" - буквы нет");
+        System.out.println("Угадайте слово из " + WordleGame.WORD_LENGTH + " букв за " +
+                WordleGame.MAX_ATTEMPTS + " попыток");
+        System.out.println("\"" + WordleGame.CORRECT_POSITION +
+                "\" - буква на месте, \"" + WordleGame.WRONG_POSITION +
+                "\" - буква есть в слове, \"" + WordleGame.NO_LETTER +
+                "\" - буквы нет");
 
         try {
             while (!wordleGame.isGameOver() && !wordleGame.isWin()) {
@@ -65,7 +69,8 @@ public class Wordle {
 
                     if (wordleGame.isWin()) {
                         System.out.println("Вы выиграли");
-                        log.println("Игрок выиграл за " + (6 - wordleGame.getAttemptsLeft()) + " попыток");
+                        log.println("Игрок выиграл за " + (WordleGame.MAX_ATTEMPTS - wordleGame.getAttemptsLeft()) +
+                                " попыток");
                         break;
                     }
                 } catch (GameException e) {

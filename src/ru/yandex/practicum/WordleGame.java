@@ -27,10 +27,19 @@ public class WordleGame {
     private Map<Integer, Character> knownPosition;
     private Map<Integer, Set<Character>> wrongPosition;
 
+    public static final int WORD_LENGTH = 5;
+    public static final int MAX_ATTEMPTS = 6;
+    public static final char CORRECT_POSITION = '+';
+    public static final char WRONG_POSITION = '^';
+    public static final char NO_LETTER = '-';
+    public static final char EMPTY_HINT = ' ';
+
+    private final Random random = new Random();
+
     public WordleGame(WordleDictionary dictionary) {
         this.answer = dictionary.getRandomWord();
         this.dictionary = dictionary;
-        this.attemptsLeft = 6;
+        this.attemptsLeft = MAX_ATTEMPTS;
         this.guesses = new ArrayList<>();
         this.hints = new ArrayList<>();
 
@@ -63,8 +72,8 @@ public class WordleGame {
     public String makeGuess(String userInput) throws GameException {
         String guess = normalizeInput(userInput);
 
-        if (guess.length() != 5) {
-            throw new InvalidWordLengthException(5, guess.length());
+        if (guess.length() != WORD_LENGTH) {
+            throw new InvalidWordLengthException(WORD_LENGTH, guess.length());
         }
 
         if (!dictionary.contains(guess)) {
@@ -87,13 +96,13 @@ public class WordleGame {
             char hintChar = hint.charAt(i);
             char guessChar = guess.charAt(i);
 
-            if (hintChar == '+') {
+            if (hintChar == CORRECT_POSITION) {
                 knownPosition.put(i, guessChar);
                 correctLetters.add(guessChar);
-            } else if (hintChar == '^') {
+            } else if (hintChar == WRONG_POSITION) {
                 correctLetters.add(guessChar);
                 wrongPosition.computeIfAbsent(i, k -> new HashSet<>()).add(guessChar);
-            } else if (hintChar == '-') {
+            } else if (hintChar == NO_LETTER) {
                 if (!correctLetters.contains(guessChar)) {
                     wrongLetters.add(guessChar);
                 }
@@ -110,9 +119,7 @@ public class WordleGame {
 
         possibleWords.removeAll(guesses);
 
-        Random random = new Random();
-        String hintWord = possibleWords.get(random.nextInt(possibleWords.size()));
-        return hintWord;
+        return possibleWords.get(random.nextInt(possibleWords.size()));
     }
 
     private List<String> findPossibleWords() {
@@ -171,15 +178,15 @@ public class WordleGame {
 
         for (int i = 0; i < guess.length(); i++) {
             if (answerChar[i] == guessChar[i]) {
-                result.append('+');
+                result.append(CORRECT_POSITION);
                 used[i] = true;
             } else {
-                result.append(' ');
+                result.append(EMPTY_HINT);
             }
         }
 
         for (int i = 0; i < guess.length(); i++) {
-            if (result.charAt(i) == '+') {
+            if (result.charAt(i) == CORRECT_POSITION) {
                 continue;
             }
 
@@ -188,7 +195,7 @@ public class WordleGame {
 
             for (int j = 0; j < answer.length(); j++) {
                 if (!used[j] && answerChar[j] == c) {
-                    result.setCharAt(i, '^');
+                    result.setCharAt(i, WRONG_POSITION);
                     used[j] = true;
                     found = true;
                     break;
@@ -196,7 +203,7 @@ public class WordleGame {
             }
 
             if (!found) {
-                result.setCharAt(i, '-');
+                result.setCharAt(i, NO_LETTER);
             }
         }
         return result.toString();
